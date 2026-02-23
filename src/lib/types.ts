@@ -19,6 +19,7 @@ export interface PromptItem {
 export interface AppSettings {
   autoInsertPosition: 'start' | 'end';
   theme: 'light' | 'dark';
+  syncId?: string;
 }
 
 export interface AppState {

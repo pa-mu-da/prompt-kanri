@@ -33,16 +33,16 @@ export const PromptCard: React.FC<PromptCardProps> = ({
     };
 
     return (
-        <div className={cn(
-            "group flex items-center gap-4 p-3 rounded-xl border transition-all hover:shadow-md",
-            colors.bg,
-            colors.border
-        )}>
+        <div
+            onClick={() => onEdit(item)}
+            className={cn(
+                "group flex items-center gap-4 p-3 rounded-xl border transition-all hover:shadow-md cursor-pointer",
+                colors.bg,
+                colors.border
+            )}
+        >
             {/* Thumbnail */}
-            <div
-                className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer"
-                onClick={() => onEdit(item)}
-            >
+            <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                 {item.thumbnail ? (
                     <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
                 ) : (
@@ -58,7 +58,10 @@ export const PromptCard: React.FC<PromptCardProps> = ({
                     </h3>
                     <div className="md:hidden">
                         <button
-                            onClick={() => onDelete(item.id)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete(item.id);
+                            }}
                             className="p-2 text-slate-400 hover:text-red-500 transition-colors"
                         >
                             <Trash2 size={18} />
@@ -79,7 +82,10 @@ export const PromptCard: React.FC<PromptCardProps> = ({
                     {item.versions.map(v => (
                         <button
                             key={v.id}
-                            onClick={() => handleCopy(v.prompt, v.id)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleCopy(v.prompt, v.id);
+                            }}
                             className={cn(
                                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95",
                                 copiedId === v.id
@@ -95,17 +101,25 @@ export const PromptCard: React.FC<PromptCardProps> = ({
                 </div>
             </div>
 
-            {/* Desktop Menu */}
+            {/* Desktop Actions */}
             <div className="hidden md:flex flex-col gap-2">
                 <button
-                    onClick={() => onEdit(item)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(item);
+                    }}
                     className="p-2 text-slate-400 hover:text-blue-500 hover:bg-white/50 dark:hover:bg-black/20 rounded-full transition-all"
+                    title="編集"
                 >
                     <Settings size={18} />
                 </button>
                 <button
-                    onClick={() => onDelete(item.id)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(item.id);
+                    }}
                     className="p-2 text-slate-400 hover:text-red-500 hover:bg-white/50 dark:hover:bg-black/20 rounded-full transition-all"
+                    title="削除"
                 >
                     <Trash2 size={18} />
                 </button>

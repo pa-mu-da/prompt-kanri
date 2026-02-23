@@ -2,7 +2,19 @@
 
 この手順を完了すると、発行されたURLを使ってスマホやタブレットから「プロンプト・パレット」が使えるようになります！
 
-## ステップ 1: GitHub へのアップロード
+## すでに一度 GitHub に上げている場合（修正の反映）
+今回の「同期機能」や「バグ修正」を反映させるには、以下のコマンドをターミナルで実行してください：
+
+```powershell
+git add .
+git commit -m "Add sync-id and fix modal reset bug"
+git push origin main
+```
+これを実行して数分待つと、Vercel上のサイトも自動的に最新版に更新されます。
+
+---
+
+## 初めて GitHub へのアップロード
 Vercelと連携するために、まずはコードをGitHubに上げる必要があります。
 
 1.  GitHub にログインし、**New repository** を作成します（名前は `prompt-palette` など）。
@@ -35,6 +47,11 @@ Vercelと連携するために、まずはコードをGitHubに上げる必要�
     *   `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
     *   `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
     *   `NEXT_PUBLIC_FIREBASE_APP_ID`
+
+> [!NOTE]
+> **「警告（！」マークが出て不安になるかもしれません」**
+> 「NEXT_PUBLIC_...はブラウザに見えてしまいます」という旨の警告が出ますが、FirebaseのAPIキーやIDは、ウェブアプリの仕組み上**「公開されても良い情報」**です。
+> 本当のセキュリティは、Firebase側の「セキュリティルール」で守られているので、そのまま進めて大丈夫です。
 
 ---
 

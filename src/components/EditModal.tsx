@@ -34,6 +34,19 @@ export const EditModal: React.FC<EditModalProps> = ({ item, initialCategory, isO
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Reset state when modal opens or item changes
+    React.useEffect(() => {
+        if (isOpen) {
+            setCategory(item?.category || initialCategory);
+            setTitle(item?.title || '');
+            setTags(item?.tags.join(', ') || '');
+            setVersions(item?.versions || [{ id: crypto.randomUUID(), name: 'v1', prompt: '' }]);
+            setThumbnail(item?.thumbnail || '');
+            setImageSrc(null);
+            setIsCropping(false);
+        }
+    }, [isOpen, item, initialCategory]);
+
     const onCropComplete = useCallback((_croppedArea: any, croppedAreaPixels: any) => {
         setCroppedAreaPixels(croppedAreaPixels);
     }, []);

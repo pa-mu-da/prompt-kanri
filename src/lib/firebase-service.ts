@@ -15,6 +15,15 @@ import { PromptItem, AppSettings } from "./types";
 
 const COLLECTION_NAME = "prompts";
 
+// Helper to get the correct document path based on syncId or anonymous UID
+const getUserDocRef = (userId: string, syncId?: string) => {
+    if (!db) return null;
+    if (syncId && syncId.trim()) {
+        return doc(db, "sync_groups", syncId.trim());
+    }
+    return doc(db, "users", userId);
+};
+
 export const FirebaseService = {
     // Auth
     async signIn() {
@@ -25,12 +34,15 @@ export const FirebaseService = {
     },
 
     // Prompts
-    subscribeToPrompts(callback: (items: PromptItem[]) => void) {
+    subscribeToPrompts(callback: (items: PromptItem[]) => void, syncId?: string) {
         const userId = auth?.currentUser?.uid;
         if (!userId || !db) return () => { };
 
+        const userDocRef = getUserDocRef(userId, syncId);
+        if (!userDocRef) return () => { };
+
         const q = query(
-            collection(db, "users", userId, COLLECTION_NAME),
+            collection(userDocRef, COLLECTION_NAME),
             orderBy("createdAt", "desc")
         );
 
@@ -43,14 +55,17 @@ export const FirebaseService = {
         });
     },
 
-    async savePrompt(item: PromptItem) {
+    async savePrompt(item: PromptItem, syncId?: string) {
         const userId = auth?.currentUser?.uid;
         if (!userId || !db) throw new Error("User not authenticated or Firebase not configured");
 
-        const userPromptsRef = collection(db, "users", userId, COLLECTION_NAME);
+        const userDocRef = getUserDocRef(userId, syncId);
+        if (!userDocRef) throw new Error("Could not determine storage path");
+
+        const userPromptsRef = collection(userDocRef, COLLECTION_NAME);
 
         if (item.id) {
-            const docRef = doc(db, "users", userId, COLLECTION_NAME, item.id);
+            const docRef = doc(userDocRef, COLLECTION_NAME, item.id);
             await setDoc(docRef, item, { merge: true });
             return item.id;
         } else {
@@ -62,11 +77,14 @@ export const FirebaseService = {
         }
     },
 
-    async deletePrompt(id: string) {
+    async deletePrompt(id: string, syncId?: string) {
         const userId = auth?.currentUser?.uid;
         if (!userId || !db) throw new Error("User not authenticated");
 
-        await deleteDoc(doc(db, "users", userId, COLLECTION_NAME, id));
+        const userDocRef = getUserDocRef(userId, syncId);
+        if (!userDocRef) throw new Error("Could not determine storage path");
+
+        await deleteDoc(doc(userDocRef, COLLECTION_NAME, id));
     },
 
     // Settings
@@ -74,6 +92,8 @@ export const FirebaseService = {
         const userId = auth?.currentUser?.uid;
         if (!userId || !db) return;
 
+        // Individual settings (theme, etc) are ALWAYS stored per-user (anonymous UID)
+        // because we don't want cross-device theme sync to be forced, or syncId itself is in settings
         await setDoc(doc(db, "users", userId), {
             settings,
             variable

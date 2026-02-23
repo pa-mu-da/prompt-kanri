@@ -77,33 +77,51 @@ export const Header: React.FC<HeaderProps> = ({ variable, setVariable, settings,
             {/* Settings Area */}
             <div className={cn(
                 "overflow-hidden transition-all duration-300 ease-in-out bg-slate-100 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800",
-                showSettings ? "max-h-24 opacity-100 py-3" : "max-h-0 opacity-0 py-0"
+                showSettings ? "max-h-[200px] opacity-100 py-4" : "max-h-0 opacity-0 py-0"
             )}>
-                <div className="max-w-4xl mx-auto px-4 flex items-center justify-between">
-                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">変数の自動挿入位置</span>
-                    <div className="flex bg-white dark:bg-slate-900 rounded-lg p-1 border border-slate-200 dark:border-slate-700">
-                        <button
-                            onClick={() => updateSettings({ autoInsertPosition: 'start' })}
-                            className={cn(
-                                "flex items-center gap-2 px-3 py-1 rounded-md text-sm transition-all",
-                                settings.autoInsertPosition === 'start'
-                                    ? "bg-blue-500 text-white shadow-sm"
-                                    : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-                            )}
-                        >
-                            <ChevronDown size={14} /> 先頭
-                        </button>
-                        <button
-                            onClick={() => updateSettings({ autoInsertPosition: 'end' })}
-                            className={cn(
-                                "flex items-center gap-2 px-3 py-1 rounded-md text-sm transition-all",
-                                settings.autoInsertPosition === 'end'
-                                    ? "bg-blue-500 text-white shadow-sm"
-                                    : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-                            )}
-                        >
-                            <ChevronUp size={14} /> 末尾
-                        </button>
+                <div className="max-w-4xl mx-auto px-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">変数の自動挿入位置</span>
+                        <div className="flex bg-white dark:bg-slate-900 rounded-lg p-1 border border-slate-200 dark:border-slate-700">
+                            <button
+                                onClick={() => updateSettings({ autoInsertPosition: 'start' })}
+                                className={cn(
+                                    "flex items-center gap-2 px-3 py-1 rounded-md text-sm transition-all",
+                                    settings.autoInsertPosition === 'start'
+                                        ? "bg-blue-500 text-white shadow-sm"
+                                        : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                                )}
+                            >
+                                <ChevronDown size={14} /> 先頭
+                            </button>
+                            <button
+                                onClick={() => updateSettings({ autoInsertPosition: 'end' })}
+                                className={cn(
+                                    "flex items-center gap-2 px-3 py-1 rounded-md text-sm transition-all",
+                                    settings.autoInsertPosition === 'end'
+                                        ? "bg-blue-500 text-white shadow-sm"
+                                        : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                                )}
+                            >
+                                <ChevronUp size={14} /> 末尾
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="flex-1">
+                                <label className="text-sm font-medium text-slate-600 dark:text-slate-400 block mb-1">同期ID (共有用パスワード)</label>
+                                <input
+                                    type="text"
+                                    value={settings.syncId || ''}
+                                    onChange={(e) => updateSettings({ syncId: e.target.value })}
+                                    placeholder="例: my-secret-palette"
+                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                />
+                                <p className="text-[10px] text-slate-400 mt-1 italic">PCとスマホで同じIDを入力すると、プロンプトを共有・同期できます。</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

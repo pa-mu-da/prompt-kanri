@@ -27,36 +27,36 @@ export const Dashboard: React.FC = () => {
     const [visibleCount, setVisibleCount] = useState(10);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Firebase Auth & Data Sync
+    // Initial Auth & Data Fetch
     useEffect(() => {
-        let unsubscribe: () => void = () => { };
-
         const init = async () => {
             try {
                 await FirebaseService.signIn();
-
-                // Get initial settings and variable
                 await FirebaseService.getInitialState((variable, settings) => {
                     setState(prev => ({ ...prev, variable, settings }));
                     if (settings.theme === 'dark') {
                         document.documentElement.classList.add('dark');
                     }
-                });
-
-                // Subscribe to prompts
-                unsubscribe = FirebaseService.subscribeToPrompts((items) => {
-                    setState(prev => ({ ...prev, items }));
-                    setIsLoading(false);
+                    setIsLoading(false); // First fetch done
                 });
             } catch (e) {
                 console.error("Firebase init failed", e);
                 setIsLoading(false);
             }
         };
-
         init();
-        return () => unsubscribe();
     }, []);
+
+    // Subscribe to prompts - re-runs when syncId changes
+    useEffect(() => {
+        let unsubscribe: () => void = () => { };
+        if (!isLoading) {
+            unsubscribe = FirebaseService.subscribeToPrompts((items) => {
+                setState(prev => ({ ...prev, items }));
+            }, state.settings.syncId);
+        }
+        return () => unsubscribe();
+    }, [state.settings.syncId, isLoading]);
 
     // Sync theme to DOM and Cloud Settings
     useEffect(() => {
@@ -84,7 +84,7 @@ export const Dashboard: React.FC = () => {
 
     const handleSaveItem = async (newItem: PromptItem) => {
         try {
-            await FirebaseService.savePrompt(newItem);
+            await FirebaseService.savePrompt(newItem, state.settings.syncId);
         } catch (e) {
             console.error("Failed to save item", e);
             alert("保存に失敗しました。");
@@ -94,7 +94,7 @@ export const Dashboard: React.FC = () => {
     const handleDeleteItem = async (id: string) => {
         if (typeof window !== 'undefined' && window.confirm('このアイテムを削除してもよろしいですか？')) {
             try {
-                await FirebaseService.deletePrompt(id);
+                await FirebaseService.deletePrompt(id, state.settings.syncId);
             } catch (e) {
                 console.error("Failed to delete item", e);
                 alert("削除に失敗しました。");
