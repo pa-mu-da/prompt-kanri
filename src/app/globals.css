@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  /* Custom slate-900 like */
+}
+
+.dark {
+  --background: #020617;
+  /* Custom slate-950 like */
+  --foreground: #f8fafc;
+  /* Custom slate-50 like */
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
